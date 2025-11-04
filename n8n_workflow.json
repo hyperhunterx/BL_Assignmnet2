@@ -1,0 +1,495 @@
+{
+  "name": "BL-2",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "custom",
+              "cronExpression": "10 * * * * *"
+            }
+          ]
+        },
+        "authentication": "serviceAccount",
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1ziazyb79WlSqf9DJSByTAUB7n0KEZxBS",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {
+          "fileType": "all"
+        }
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "531ba8f6-90bc-4e23-aee9-1eda12cafc32",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleApi": {
+          "id": "d0Y6QGDU8eJVlzVE",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "7ed344b9-71e3-4618-87d4-a1b4018826a5",
+      "name": "Download file",
+      "credentials": {
+        "googleApi": {
+          "id": "d0Y6QGDU8eJVlzVE",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yearly-profound-crayfish.ngrok-free.app/validate",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "cover_file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "056bc8db-38ba-49ad-9a1f-7b611b19ce15",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f45ea4ee-ecaa-4aa3-acf7-ad3b2c5c9b13",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "PASS",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "467f6acb-fc0d-4602-b1f1-83f5a2bf79f1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apphSpCxL06cVTR4g",
+          "mode": "list",
+          "cachedResultName": "Untitled Base",
+          "cachedResultUrl": "https://airtable.com/apphSpCxL06cVTR4g"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblcD9NVlDl77bFm1",
+          "mode": "list",
+          "cachedResultName": "Cover submissions",
+          "cachedResultUrl": "https://airtable.com/apphSpCxL06cVTR4g/tblcD9NVlDl77bFm1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Book ID": "= {{ $json.filename.split('_')[0] }}",
+            "Confidence": "={{ $json.confidence_score }}",
+            "Issues": "={{ $json.issues.map(issue => issue.details).join('\\n') }}",
+            "Filename": "={{ $json.filename }}",
+            "Status": "={{ $json.status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Book ID",
+              "displayName": "Book ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Confidence",
+              "displayName": "Confidence",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Issues",
+              "displayName": "Issues",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Filename",
+              "displayName": "Filename",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        176
+      ],
+      "id": "7751db00-4b5d-4470-9545-eb670824dbe5",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "49uIg4LX75xWL2F4",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apphSpCxL06cVTR4g",
+          "mode": "list",
+          "cachedResultName": "Untitled Base",
+          "cachedResultUrl": "https://airtable.com/apphSpCxL06cVTR4g"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblcD9NVlDl77bFm1",
+          "mode": "list",
+          "cachedResultName": "Cover submissions",
+          "cachedResultUrl": "https://airtable.com/apphSpCxL06cVTR4g/tblcD9NVlDl77bFm1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Confidence": "={{ $json.confidence_score }}",
+            "Book ID": "={{ $json.filename.split('_')[0] }}",
+            "Status": "PASS",
+            "Issues": "No issues found.",
+            "Filename": "={{ $json.filename }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Book ID",
+              "displayName": "Book ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Confidence",
+              "displayName": "Confidence",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Issues",
+              "displayName": "Issues",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Filename",
+              "displayName": "Filename",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        864,
+        -160
+      ],
+      "id": "e87bebe1-5e98-4d09-a956-276ae9701c1b",
+      "name": "Create a record1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "49uIg4LX75xWL2F4",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "jainrohit0751@gmail.com",
+        "toEmail": "jainrohit0751@gmail.com",
+        "subject": "Action Required: Your Book Cover Needs Review",
+        "html": "=<h3>Hi,</h3>\n<p>We've reviewed your recent cover submission (<strong>{{ $json.fields.Filename }}</strong>) and it requires a few adjustments. Please see the issues we detected below:</p>\n \n<p>\n  <strong>{{ $json.fields.Issues.replaceAll('\\n', '<br>') }}</strong>\n</p>\n\n<p>Please make the required changes and re-upload the cover to the same Google Drive folder.</p>\n<p>Thank you!</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1088,
+        176
+      ],
+      "id": "e1f621f9-3cff-4f96-ac34-5ae725a911fb",
+      "name": "Send email",
+      "webhookId": "093a0201-7c4a-4c24-88f7-fb1aa0df5d6b",
+      "credentials": {
+        "smtp": {
+          "id": "WGp5WA0GV5GBMMFk",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "jainrohit0751@gmail.com",
+        "toEmail": "jainrohit0751@gmail.com",
+        "subject": "✅ Your Book Cover Has Been Approved!",
+        "html": "=<h3>Congratulations!</h3>\n<p>\n  We are happy to inform you that your book cover submission for <strong>{{ $json.fields.Filename }}</strong> has been reviewed and approved.\n</p>\n<p>\n  No further action is needed from your side for the cover design. We will now proceed with the next steps in the publishing process.\n</p>\n<p>\n  Thank you for your submission!\n</p>\n<p>\n  Best regards,<br>\n  The BookLeaf Publishing Team\n</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1072,
+        -160
+      ],
+      "id": "f95d50ec-de4c-4820-91b8-e79fb148b9c9",
+      "name": "Send email1",
+      "webhookId": "e76ba712-1e0e-4376-9f6b-7440fc973e6f",
+      "credentials": {
+        "smtp": {
+          "id": "WGp5WA0GV5GBMMFk",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Create a record1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record1": {
+      "main": [
+        [
+          {
+            "node": "Send email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "17465a10-912b-457e-b4c0-01eeae592d8f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "29931b2af2c49df321a372f0a3f58a3992d9e92ba69128872d2fe4ffdabad41e"
+  },
+  "id": "VbBe2KJfIklqxHlk",
+  "tags": []
+}
