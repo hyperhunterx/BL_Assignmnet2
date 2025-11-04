@@ -15,7 +15,7 @@ ALLOWED_EXTENSIONS = {'png', 'pdf'}
 # For Windows, it might be: pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 # For Linux, it's usually in the PATH already.
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' # Add the path as per your installation.
 
 # Cover dimensions and rules (in pixels for a 5x8 inch cover at 300 DPI)
 DPI = 300
@@ -189,4 +189,5 @@ def validate_cover():
 
 # --- Run the App ---
 if __name__ == '__main__':
+
     app.run(debug=True, port=5000)
