@@ -31,3 +31,4 @@ The system was tested using the provided sample images, categorized as "Good" an
 - **Test Cases:** Included covers with clear text overlap, covers with no overlap, and covers with minor resolution issues.
 - **Accuracy:** The system achieved 100% accuracy on the provided sample set for the critical "Text Overlap" issue, exceeding the 90% requirement.
 - **Demonstration:** A full end-to-end test is available in the Loom video linked below.
+- **Link** : https://hypirianx.neetorecord.com/watch/1e8c2b8d162baf192478
